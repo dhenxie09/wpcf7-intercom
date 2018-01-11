@@ -36,7 +36,7 @@ require "vendor/autoload.php";
 ```php
 use Intercom\IntercomClient;
 
-$client = new IntercomClient(appId, apiKey);
+$client = new IntercomClient(accessToken);
 ```
 
 Or if using an OAuth or Personal Access Token use:
@@ -44,7 +44,7 @@ Or if using an OAuth or Personal Access Token use:
 ```php
 use Intercom\IntercomClient;
 
-$client = new IntercomClient(<insert_token_here>, null);
+$client = new IntercomClient(<insert_access_token_here>);
 ```
 
 ## Users

@@ -13,11 +13,8 @@ class IntercomClient
     /** @var Client $http_client */
     private $http_client;
 
-    /** @var string API user authentication */
-    protected $usernamePart;
-
-    /** @var string API password authentication */
-    protected $passwordPart;
+    /** @var string access token authentication */
+    protected $accessToken;
 
     /** @var IntercomUsers $users */
     public $users;
@@ -54,10 +51,9 @@ class IntercomClient
 
     /**
      * IntercomClient constructor.
-     * @param string $usernamePart App ID.
-     * @param string $passwordPart Api Key.
+     * @param string $accessToken Access Token.
      */
-    public function __construct($usernamePart, $passwordPart)
+    public function __construct($accessToken)
     {
         $this->setDefaultClient();
         $this->users = new IntercomUsers($this);
@@ -74,8 +70,7 @@ class IntercomClient
         $this->notes = new IntercomNotes($this);
         $this->segments = new IntercomSegments($this);
 
-        $this->usernamePart = $usernamePart;
-        $this->passwordPart = $passwordPart;
+        $this->accessToken = $accessToken;
     }
 
     private function setDefaultClient()
@@ -103,9 +98,9 @@ class IntercomClient
     {
         $response = $this->http_client->request('POST', "https://api.intercom.io/$endpoint", [
             'json' => $json,
-            'auth' => $this->getAuth(),
             'headers' => [
-                'Accept' => 'application/json'
+                'Accept' => 'application/json',
+                'Authorization' => $this->getAccessToken()
             ]
         ]);
         return $this->handleResponse($response);
@@ -122,9 +117,9 @@ class IntercomClient
     {
         $response = $this->http_client->request('DELETE', "https://api.intercom.io/$endpoint", [
             'json' => $json,
-            'auth' => $this->getAuth(),
             'headers' => [
-                'Accept' => 'application/json'
+                'Accept' => 'application/json',
+                'Authorization' => $this->getAccessToken()
             ]
         ]);
         return $this->handleResponse($response);
@@ -140,9 +135,9 @@ class IntercomClient
     {
         $response = $this->http_client->request('GET', "https://api.intercom.io/$endpoint", [
             'query' => $query,
-            'auth' => $this->getAuth(),
             'headers' => [
-                'Accept' => 'application/json'
+                'Accept' => 'application/json',
+                'Authorization' => $this->getAccessToken()
             ]
         ]);
         return $this->handleResponse($response);
@@ -157,9 +152,9 @@ class IntercomClient
     public function nextPage($pages)
     {
         $response = $this->http_client->request('GET', $pages['next'], [
-            'auth' => $this->getAuth(),
             'headers' => [
-                'Accept' => 'application/json'
+                'Accept' => 'application/json',
+                'Authorization' => $this->getAccessToken()
             ]
         ]);
         return $this->handleResponse($response);
@@ -169,9 +164,9 @@ class IntercomClient
      * Returns authentication parameters.
      * @return array
      */
-    public function getAuth()
-    {
-        return [$this->usernamePart, $this->passwordPart];
+
+    public function getAccessToken() {
+        return "Bearer ". $this->accessToken;
     }
 
     /**
